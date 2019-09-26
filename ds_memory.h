@@ -75,5 +75,5 @@ ds_write(long start, void* ptr, long bytes);
 // of the file and close the file.
 int
 ds_finish();
-
+ 
 #endif // DS_MEMORY_H
