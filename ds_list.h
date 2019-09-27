@@ -1,17 +1,23 @@
-#ifndef DS_ARRAY_H
-#define DS_ARRAY_H
+#ifndef DS_LIST_H
+#define DS_LIST_H
 
 #include "ds_memory.h"
 
-#define MAX_ELEMENTS 256
+#define FILENAME "list.bin"
 #define SIZEOF_LEN sizeof(long)
-#define SIZEOF_VALUE sizeof(int)
+#define SIZEOF_LIST_ITEM sizeof(struct ds_list_item_struct)
+
+struct ds_list_item_struct
+{
+    int item;
+    long next;
+};
+
+void
+ds_create_list();
 
 int
-ds_create_array();
-
-int
-ds_init_array();
+ds_init_list();
 
 int
 ds_replace(int value, long index);
@@ -32,6 +38,6 @@ int
 ds_read_elements(char* filename);
 
 int
-ds_finish_array();
+ds_finish_list();
 
-#endif // DS_ARRAY_H
+#endif // DS_LIST_H

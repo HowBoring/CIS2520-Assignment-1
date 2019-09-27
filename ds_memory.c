@@ -15,32 +15,32 @@ main(int argc, char const* argv[])
 int
 ds_create(char* filename, long size)
 {
-    FILE* _fp = fopen(filename, "wb+");
-    if (!_fp) {
+    FILE* fp = fopen(filename, "wb+");
+    if (!fp) {
         perror("File opening failed");
         return EXIT_FAILURE;
     }
 
-    struct ds_blocks_struct _block[MAX_BLOCKS];
+    struct ds_blocks_struct block[MAX_BLOCKS];
 
-    _block[0].start = 0;
-    _block[0].length = size;
-    _block[0].alloced = 0;
+    block[0].start = 0;
+    block[0].length = size;
+    block[0].alloced = 0;
 
     short* addi_buffer = malloc(size);
     memset(addi_buffer, 0, size);
 
     for (size_t i = 1; i < MAX_BLOCKS; i++) {
-        _block[0].start = 0;
-        _block[0].length = 0;
-        _block[0].alloced = 0;
+        block[0].start = 0;
+        block[0].length = 0;
+        block[0].alloced = 0;
     }
 
-    fwrite(ds_file.block, sizeof(struct ds_blocks_struct), MAX_BLOCKS, _fp);
+    fwrite(ds_file.block, sizeof(struct ds_blocks_struct), MAX_BLOCKS, fp);
 
-    fwrite(addi_buffer, 1, size, _fp);
+    fwrite(addi_buffer, 1, size, fp);
 
-    fclose(_fp);
+    fclose(fp);
 
     return 0;
 }
@@ -48,13 +48,13 @@ ds_create(char* filename, long size)
 int
 ds_init(char* filename)
 {
-    FILE* _fp = fopen(filename, "wb+");
-    if (!_fp) {
+    FILE* fp = fopen(filename, "wb+");
+    if (!fp) {
         perror("File opening failed");
         return EXIT_FAILURE;
     }
 
-    ds_file.fp = _fp;
+    ds_file.fp = fp;
     fread(
       ds_file.block, sizeof(struct ds_blocks_struct), MAX_BLOCKS, ds_file.fp);
 
