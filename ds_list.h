@@ -13,7 +13,7 @@ struct ds_list_item_struct
     long next;
 };
 
-void
+int
 ds_create_list();
 
 int

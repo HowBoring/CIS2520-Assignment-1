@@ -11,7 +11,7 @@ ds_create_array()
     ds_malloc(SIZEOF_LEN);
     long length = 0;
     ds_write(0, &length, SIZEOF_LEN);
-    ds_malloc(SIZEOF_LEN + SIZEOF_VALUE * MAX_ELEMENTS);
+    ds_malloc(SIZEOF_VALUE * MAX_ELEMENTS);
     ds_finish();
 }
 
@@ -38,7 +38,7 @@ ds_replace(int value, long index)
         return EXIT_FAILURE;
     }
 
-    long start = index * SIZEOF_VALUE;
+    long start = index * SIZEOF_VALUE + SIZEOF_LEN;
     if (ds_write(start, &value, SIZEOF_VALUE) != start) {
         perror("Data replacing failed");
         return EXIT_FAILURE;
@@ -60,7 +60,7 @@ ds_insert(int value, long index)
         return EXIT_FAILURE;
     }
 
-    long start = index * SIZEOF_VALUE;
+    long start = index * SIZEOF_VALUE + SIZEOF_LEN;
     if (index == elements) {
         ds_write(start, &value, SIZEOF_VALUE);
         elements++;
@@ -84,7 +84,7 @@ ds_delete(long index)
     elements--;
 
     for (size_t len = index; len < elements; len++) {
-        long start_curr = index * SIZEOF_VALUE;
+        long start_curr = index * SIZEOF_VALUE + SIZEOF_LEN;
         long start_next = start_curr + SIZEOF_VALUE;
         int* ptr_buffer;
         ds_read(ptr_buffer, start_next, SIZEOF_VALUE);
@@ -103,8 +103,8 @@ ds_swap(long index1, long index2)
     }
 
     int *ptr_value1, *ptr_value2;
-    long start1 = index1 * SIZEOF_VALUE;
-    long start2 = index2 * SIZEOF_VALUE;
+    long start1 = index1 * SIZEOF_VALUE + SIZEOF_LEN;
+    long start2 = index2 * SIZEOF_VALUE + SIZEOF_LEN;
 
     ds_read(ptr_value1, start1, SIZEOF_VALUE);
     ds_read(ptr_value2, start2, SIZEOF_VALUE);
@@ -119,7 +119,7 @@ long
 ds_find(int target)
 {
     for (size_t index = 0; index < elements; index++) {
-        long start = index * SIZEOF_VALUE;
+        long start = index * SIZEOF_VALUE + SIZEOF_LEN;
         int* read_buffer;
         ds_read(read_buffer, start, SIZEOF_VALUE);
         if (*read_buffer == target) {
@@ -131,8 +131,8 @@ ds_find(int target)
 int
 ds_read_elements(char* filename)
 {
-    FILE* fp;
-    if (fp = fopen(filename, "r") == NULL) {
+    FILE* fp = fopen(filename, "r");
+    if (fp == NULL) {
         perror("Data file opening failed");
         return EXIT_FAILURE;
     }
