@@ -8,7 +8,7 @@ struct ds_counts_struct ds_counts;
 /* int
 main(int argc, char const* argv[])
 {
-    ds_create("test.bin", 100);
+    ds_create("test.bin", 5120);
     return 0;
 } */
 
@@ -114,19 +114,13 @@ void*
 ds_read(void* ptr, long start, long bytes)
 {
     // Move the position indicator for the file stream to `start`.
-    if (fseek(ds_file.fp,
-              sizeof(struct ds_blocks_struct) * MAX_BLOCKS + start,
-              SEEK_SET)) {
-        perror("Position indicator for the file stream moving failed");
-        return NULL;
-    }
+    fseek(ds_file.fp,
+          sizeof(struct ds_blocks_struct) * MAX_BLOCKS + start,
+          SEEK_SET);
     // Allocate space for read data.
     ptr = malloc(bytes);
     // Read `bytes` bytes data from `start`.
-    if (fread(ptr, 1, bytes, ds_file.fp) != bytes) {
-        perror("Data reading failed");
-        return NULL;
-    }
+    fread(ptr, 1, bytes, ds_file.fp);
 
     ds_counts.reads++;
 
@@ -137,17 +131,11 @@ long
 ds_write(long start, void* ptr, long bytes)
 {
     // Move the position indicator for the file stream to `start`.
-    if (fseek(ds_file.fp,
-              sizeof(struct ds_blocks_struct) * MAX_BLOCKS + start,
-              SEEK_SET)) {
-        perror("Position indicator for the file stream moving failed");
-        return -1;
-    }
+    fseek(ds_file.fp,
+          sizeof(struct ds_blocks_struct) * MAX_BLOCKS + start,
+          SEEK_SET);
 
-    if (fwrite(ptr, 1, bytes, ds_file.fp) != bytes) {
-        perror("Data reading failed");
-        return -1;
-    }
+    fwrite(ptr, 1, bytes, ds_file.fp);
 
     ds_counts.writes++;
 
@@ -158,18 +146,10 @@ int
 ds_finish()
 {
     // Move the position indicator for the file stream to `start`.
-    if (fseek(ds_file.fp, 0, SEEK_SET)) {
-        perror("Position indicator for the file stream moving failed");
-        return 0;
-    }
+    fseek(ds_file.fp, 0, SEEK_SET);
 
-    if (fwrite(ds_file.block,
-               sizeof(struct ds_blocks_struct),
-               MAX_BLOCKS,
-               ds_file.fp) != MAX_BLOCKS) {
-        perror("Data reading failed");
-        return 0;
-    }
+    fwrite(
+      ds_file.block, sizeof(struct ds_blocks_struct), MAX_BLOCKS, ds_file.fp);
 
     fclose(ds_file.fp);
 

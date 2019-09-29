@@ -3,6 +3,16 @@
 // This global variable will hold the number of elements currently in the array.
 long elements;
 
+/* int
+main(int argc, char const* argv[])
+{
+    ds_create_array();
+    ds_init_array();
+    ds_read_elements("values/value_100.data");
+    ds_finish_array();
+    return 0;
+} */
+
 int
 ds_create_array()
 {
@@ -19,13 +29,13 @@ int
 ds_init_array()
 {
     ds_init("array.bin");
-    long* length_ptr;
-    if (!ds_read(length_ptr, 0, SIZEOF_LEN)) {
+    long length;
+    if (!ds_read(&length, 0, SIZEOF_LEN)) {
         perror("Array length reading failed");
         return EXIT_FAILURE;
     }
 
-    elements = *length_ptr;
+    elements = length;
 
     return 0;
 }
@@ -55,7 +65,7 @@ ds_insert(int value, long index)
         return EXIT_FAILURE;
     }
 
-    if (index < 0 || index >= elements) {
+    if (index < 0 || index > elements) {
         perror("Index out of range");
         return EXIT_FAILURE;
     }
@@ -102,15 +112,15 @@ ds_swap(long index1, long index2)
         return EXIT_FAILURE;
     }
 
-    int *ptr_value1, *ptr_value2;
+    int ptr_value1, ptr_value2;
     long start1 = index1 * SIZEOF_VALUE + SIZEOF_LEN;
     long start2 = index2 * SIZEOF_VALUE + SIZEOF_LEN;
 
-    ds_read(ptr_value1, start1, SIZEOF_VALUE);
-    ds_read(ptr_value2, start2, SIZEOF_VALUE);
+    ds_read(&ptr_value1, start1, SIZEOF_VALUE);
+    ds_read(&ptr_value2, start2, SIZEOF_VALUE);
 
-    ds_write(start2, ptr_value1, SIZEOF_VALUE);
-    ds_write(start1, ptr_value2, SIZEOF_VALUE);
+    ds_write(start2, &ptr_value1, SIZEOF_VALUE);
+    ds_write(start1, &ptr_value2, SIZEOF_VALUE);
 
     return 0;
 }
@@ -137,10 +147,11 @@ ds_read_elements(char* filename)
         return EXIT_FAILURE;
     }
 
-    int val_temp[MAX_ELEMENTS], len = 0;
+    int val_temp[MAX_ELEMENTS] = { 0 }, len = 0;
 
     while (!feof(fp)) {
-        if (len >= MAX_ELEMENTS - elements) {
+        if (len > MAX_ELEMENTS - elements) {
+            printf("%d, %d", len, elements);
             perror("The number of line in file exceeding `MAX_ELEMENTS`");
             return EXIT_FAILURE;
         }
@@ -149,6 +160,7 @@ ds_read_elements(char* filename)
 
     for (size_t i = 0; i < len; i++) {
         ds_insert(val_temp[i], elements);
+        // printf("elements: %d\n", elements);
     }
 
     return 0;

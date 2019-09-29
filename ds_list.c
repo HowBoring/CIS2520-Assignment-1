@@ -5,14 +5,18 @@
 
 long head, elements = 0;
 
+/* int
+main(int argc, char const* argv[])
+{
+    ds_create_list();
+    return 0;
+} */
+
 int
 ds_create_list()
 {
     ds_create(FILENAME, SIZEOF_LEN + SIZEOF_LIST_ITEM * 256);
-    if (!ds_init(FILENAME)) {
-        perror("File opening failed");
-        return EXIT_FAILURE;
-    }
+    ds_init(FILENAME);
     long start = head = ds_malloc(SIZEOF_LEN);
     long buffer = -1;
     ds_write(start, &buffer, SIZEOF_LEN);
@@ -86,10 +90,10 @@ ds_insert(int value, long index)
     new_item.next = read_item.next;
     read_item.next = ds_malloc(SIZEOF_LIST_ITEM);
 
-    if (read_item.next == -1) {
-        perror("Memory used up");
-        return EXIT_FAILURE;
-    }
+    // if (read_item.next == -1) {
+    //     perror("Memory used up");
+    //     return EXIT_FAILURE;
+    // }
 
     ds_write(curr_pos, &read_item, SIZEOF_LIST_ITEM);
     ds_write(read_item.next, &new_item, SIZEOF_LIST_ITEM);
@@ -211,5 +215,6 @@ ds_read_elements(char* filename)
 int
 ds_finish_list()
 {
+    ds_write(0, &head, SIZEOF_LEN);
     return !ds_finish();
 }
